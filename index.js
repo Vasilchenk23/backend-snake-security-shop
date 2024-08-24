@@ -8,16 +8,11 @@ const app = express();
 
 const pool = new Pool({
   user: 'use',         
-  host: 'junction.proxy.rlwy.net',
+  host: 'autorack.proxy.rlwy.net',
   database: 'snake',     
   password: '123',    
-  port: 532,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  port: 5432,
 });
-
-
 
 
 const cors = require('cors');
