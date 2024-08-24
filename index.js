@@ -4,12 +4,19 @@ const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 
 const app = express();
+
+
 const pool = new Pool({
-  connectionString: 'postgres://use:123@localhost:5432/snake',
+  user: 'use',         
+  host: 'junction.proxy.rlwy.net',
+  database: 'snake',     
+  password: '123',    
+  port: 13596,
   ssl: {
     rejectUnauthorized: false
   }
 });
+
 
 
 
