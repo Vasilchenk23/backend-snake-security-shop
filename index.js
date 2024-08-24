@@ -5,12 +5,13 @@ const { Pool } = require('pg');
 
 const app = express();
 const pool = new Pool({
-  user: 'use',
-  host: 'localhost',
-  database: 'snake',
-  password: '123',
-  port: 5432,
+  connectionString: 'postgres://use:123@localhost:5432/snake',
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
+
+
 
 const cors = require('cors');
 app.use(cors());
