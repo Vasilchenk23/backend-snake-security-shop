@@ -11,7 +11,7 @@ const pool = new Pool({
   host: 'junction.proxy.rlwy.net',
   database: 'snake',     
   password: '123',    
-  port: 13596,
+  port: 532,
   ssl: {
     rejectUnauthorized: false
   }
