@@ -2,6 +2,8 @@ const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const multer = require('multer');
+const path = require('path');
 
 const pool = new Pool({
   user: 'var404',
@@ -14,6 +16,19 @@ const pool = new Pool({
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
+
+app.use('/uploads', express.static('uploads'));
 
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
@@ -53,7 +68,6 @@ app.post('/api/login', async (req, res) => {
     const match = await bcrypt.compare(password, user.password_hash);
 
     if (match) {
-      // Если нужно, вы можете вернуть какой-то токен или идентификатор
       res.send('Login successful');
     } else {
       res.status(401).send('Invalid credentials');
@@ -74,13 +88,14 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-app.post('/api/products', async (req, res) => {
+app.post('/api/products', upload.single('image'), async (req, res) => {
   const { name, description, price } = req.body;
+  const image = req.file.filename; 
 
   try {
     const result = await pool.query(
-      'INSERT INTO products (name, description, price) VALUES ($1, $2, $3) RETURNING *',
-      [name, description, price]
+      'INSERT INTO products (name, image, description, price) VALUES ($1, $2, $3, $4) RETURNING *',
+      [name, image, description, price]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -94,7 +109,7 @@ app.delete('/api/products/:id', async (req, res) => {
 
   try {
     await pool.query('DELETE FROM products WHERE id = $1', [id]);
-    res.status(204).send(); 
+    res.status(204).send();
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
